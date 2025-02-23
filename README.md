@@ -1,3 +1,52 @@
 # 57_kotlin_team_afisha_telegram
-57 school kotlin team project. Gladyshev Daniil, Faleev Alex, Laskina Alice 
-The project is a Telegram bot built with Kotlin that helps users find events and places to spend their evening, such as concerts, theaters, exhibitions, restaurants, and other activities. Users can select a city and apply filters for category, date, price, etc. The bot will then show a list of suitable events with descriptions, images, and links to ticket purchases. Additionally, users can like artists, venues, and categories of events to receive personalized recommendations in the future. The bot will send reminders about events for which users have purchased tickets and allow them to set their preferred time for notifications. The overall goal is to provide users with an easy and enjoyable way to discover events, tailored to their individual interests and preferences.
+# Описание проекта
+
+**Название проекта**: Telegram-бот для поиска мероприятий
+
+## Описание
+Проект представляет собой бота, который помогает пользователю находить мероприятия, такие как концерты, театры, выставки, рестораны и другие активности. Бот предоставляет информацию о событиях на основе выбранного города, фильтров (категория, дата, цена и т.д.), а также персонализированные рекомендации. Пользователь может получать список подходящих мероприятий с описаниями, изображениями и ссылками на покупку билетов.
+
+---
+
+### Функциональные требования
+
+1. **Регистрация пользователей**:
+    - Пользователь может зарегистрироваться в системе, предоставив ID и имя.
+    - Проверка на существование пользователя с таким же ID.
+
+2. **Поиск мероприятий**:
+    - Возможность поиска событий по названию.
+    - Возможность поиска по категориям (например, концерты, театры, выставки).
+    - Возможность фильтрации по дате, цене и другим параметрам.
+  
+3. **Просмотр мероприятий**:
+    - Пользователь может просматривать информацию о событиях, включая название, описание, категорию, дату и цену.
+
+4. **Удаление событий**:
+    - Администратор может удалять события (функция доступна только через административный интерфейс или команду).
+
+5. **Рекомендации по событиям**:
+    - Рекомендации на основе интересов и активности пользователя.
+
+---
+
+### Структура проекта
+
+```plaintext
+src/
+ └─ __kotlin_team_project/
+     └─ afisha/
+         ├─ controller/
+         │    └─ AuthController.kt      # Контроллер для регистрации и управления пользователями
+         │    └─ ActivitiesController.kt # Контроллер для управления событиями
+         ├─ model/
+         │    └─ Event.kt               # Модель для событий
+         │    └─ User.kt                # Модель для пользователей
+         ├─ repository/
+         │    └─ EventRepository.kt     # Репозиторий для работы с событиями в базе данных
+         │    └─ UserRepository.kt      # Репозиторий для работы с пользователями в базе данных
+         ├─ service/
+         │    └─ EventService.kt        # Логика работы с событиями
+         │    └─ UserService.kt         # Логика работы с пользователями
+         └─ application.properties      # Конфигурация Spring Boot приложения
+```
