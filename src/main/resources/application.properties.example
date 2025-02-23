@@ -4,7 +4,7 @@ spring.application.name=afisha
 server.port=8080
 
 # Telegram Bot Configuration
-telegram.bot.token=7458852467:AAGQQgXKA4mXuFaGkQa6sug-Et4C2_LLynI
+telegram.bot.token=your_bot_token_here
 
 # Logging Configuration
 logging.level.root=INFO
