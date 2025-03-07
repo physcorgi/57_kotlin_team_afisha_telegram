@@ -6,19 +6,29 @@ import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 import java.time.LocalDateTime
+import java.util.*
 
 //import eu.vendeli.tgbot.types.User
 
 @Repository
 interface ActivityLogRepository : JpaRepository<ActivityLogEntity, Long> {
-    fun findByActivityLogId(activityLogId: Long): ActivityLogEntity?
-    fun findAllByUserId(userId: Long): ActivityLogEntity?
+    override fun findById(id: Long): Optional<ActivityLogEntity>
+    fun findAllByUserId(userId: Long): List<ActivityLogEntity>?
     fun findAllByAction(action: String): List<ActivityLogEntity>?
-    fun deleteByActivityLogId(activityLogId: Long): ActivityLogEntity?
-    fun deleteAllByUserId(userId: Long): ActivityLogEntity?
-    fun deleteAllByAction(action: String): List<ActivityLogEntity>?
+    
+    @Modifying
+    @Query("DELETE FROM ActivityLogEntity a WHERE a.id = :id")
+    override fun deleteById(id: Long)
+
+    @Modifying
+    @Query("DELETE FROM ActivityLogEntity a WHERE a.userId = :userId")
+    fun deleteAllByUserId(userId: Long): Int
+    
+    @Modifying
+    @Query("DELETE FROM ActivityLogEntity a WHERE a.action = :action")
+    fun deleteAllByAction(action: String): Int
 
     @Modifying
     @Query("DELETE FROM ActivityLogEntity a WHERE a.createdAt < :date")
-    fun deleteAllByCreatedAtBefore(date: LocalDateTime): List<ActivityLogEntity>?
+    fun deleteAllByCreatedAtBefore(date: LocalDateTime): Int
 }

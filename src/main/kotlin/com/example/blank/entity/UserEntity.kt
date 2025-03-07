@@ -3,6 +3,8 @@ package com.example.blank.entity
 import com.example.blank.dto.UserDto
 import jakarta.persistence.*
 import java.time.LocalDateTime
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.SqlTypes
 
 @Entity
 @Table(
@@ -19,15 +21,16 @@ class UserEntity(
     val id: Long = 0,
 
     @Column(name = "telegram_id", nullable = false, unique = true)
-    val telegramId: Long,
+    val telegramId: Long = 0,
 
     @Column(nullable = false, length = 255)
-    var username: String,
+    var username: String = "",
 
     @Column(name = "full_name", nullable = true, length = 255)
     var fullName: String? = null,
 
-    @Column(name = "profile_data", nullable = true, columnDefinition = "jsonb")
+    @Column(name = "profile_data", nullable = true)
+    @JdbcTypeCode(SqlTypes.JSON)
     var profileData: String? = null,
 
     @Column(nullable = false)
@@ -41,7 +44,10 @@ class UserEntity(
 
     @Column(name = "updated_at", nullable = false)
     var updatedAt: LocalDateTime = LocalDateTime.now()
-)
+) {
+    // Конструктор по умолчанию для Hibernate
+    constructor() : this(0, 0, "", null, null, 0, 0, LocalDateTime.now(), LocalDateTime.now())
+}
 
 fun UserEntity.updateTimestamp() {
         updatedAt = LocalDateTime.now()

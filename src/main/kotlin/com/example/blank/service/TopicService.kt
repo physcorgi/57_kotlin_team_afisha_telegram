@@ -19,8 +19,8 @@ class TopicService(
         topicRepository.save(topic.toEntity())
     }
 
-    fun getTopicByTopicId(topicId: Long): TopicEntity {
-        return topicRepository.findByTopicId(topicId) ?: throw TopicNotFoundException("Topic with topicId $topicId not found")
+    fun getTopicById(id: Long): TopicEntity {
+        return topicRepository.findById(id).orElseThrow { TopicNotFoundException("Topic with id $id not found") }
     }
 
     fun getTopicByName(name: String): TopicEntity {
@@ -32,42 +32,48 @@ class TopicService(
     }
 
     @Transactional
-    fun deleteTopicByTopicId(topicId: Long): TopicEntity {
-        val topic = topicRepository.findByTopicId(topicId) ?: throw TopicNotFoundException("Topic with topicId $topicId not found")
-        topicRepository.deleteByTopicId(topicId)
+    fun deleteTopicById(id: Long): TopicEntity {
+        val topic = topicRepository.findById(id).orElseThrow { TopicNotFoundException("Topic with id $id not found") }
+        topicRepository.deleteById(id)
         return topic
     }
 
     @Transactional
-    fun deleteTopicByName(name: String): TopicEntity {
+    fun deleteTopicByName(name: String): Int {
         val topic = topicRepository.findByName(name) ?: throw TopicNotFoundException("Topic with name $name not found")
-        topicRepository.deleteByName(name)
-        return topic
+        val deletedCount = topicRepository.deleteByName(name)
+        if (deletedCount <= 0) {
+            throw TopicNotFoundException("Failed to delete topic with name $name")
+        }
+        return deletedCount
     }
 
     @Transactional
-    fun deleteTopicByCreatedBy(createdBy: String): List<TopicEntity> {
+    fun deleteTopicsByCreatedBy(createdBy: String): Int {
         val topics = topicRepository.findAllByCreatedBy(createdBy) ?: throw TopicNotFoundException("No topics created by $createdBy found")
 
         if (topics.isEmpty()) {
             throw TopicNotFoundException("No topics created by $createdBy found")
         }
 
-        topicRepository.deleteAllByCreatedBy(createdBy)
-        return topics
+        val deletedCount = topicRepository.deleteAllByCreatedBy(createdBy)
+        if (deletedCount <= 0) {
+            throw TopicNotFoundException("Failed to delete topics created by $createdBy")
+        }
+        return deletedCount
     }
 
     @Transactional
-    fun updateTopicName(topicId: Long, newName: String): TopicEntity {
-        val topic = topicRepository.findByTopicId(topicId) ?: throw TopicNotFoundException("Topic with topicId $topicId not found")
+    fun updateTopicName(id: Long, newName: String): TopicEntity {
+        val topic = topicRepository.findById(id).orElseThrow { TopicNotFoundException("Topic with id $id not found") }
         topic.name = newName
         topic.updateTimestamp()
         return topicRepository.save(topic)
     }
 
     @Transactional
-    fun updateTopicDescription(topicId: Long, newDescription: String): TopicEntity {
-        val topic = topicRepository.findByTopicId(topicId) ?: throw TopicNotFoundException("Topic with topicId $topicId not found")
+    fun updateTopicDescription(id: Long, newDescription: String): TopicEntity {
+        val topic = topicRepository.findById(id).orElseThrow { TopicNotFoundException("Topic with id $id not found") }
         topic.description = newDescription
         topic.updateTimestamp()
         return topicRepository.save(topic)

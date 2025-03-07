@@ -20,14 +20,17 @@ class UserTopicEntity(
     val id: Long = 0,
 
     @Column(name = "user_id", nullable = false)
-    val userId: Long,
+    val userId: Long = 0,
 
     @Column(name = "topic_id", nullable = false)
-    val topicId: Long,
+    val topicId: Long = 0,
 
     @Column(name = "selected_at", nullable = false)
     val selectedAt: LocalDateTime = LocalDateTime.now()
-)
+) {
+    // Конструктор по умолчанию для Hibernate
+    constructor() : this(0, 0, 0, LocalDateTime.now())
+}
 
 fun UserTopicEntity.toDto() = UserTopicDto(
     userId = userId,

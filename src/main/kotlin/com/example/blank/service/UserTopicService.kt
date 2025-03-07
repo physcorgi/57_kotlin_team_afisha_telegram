@@ -19,9 +19,9 @@ class UserTopicService(
         userTopicRepository.save(userTopic.toEntity())
     }
 
-    fun getUserTopicById(userTopicId: Long): UserTopicEntity {
-        return userTopicRepository.findByUserTopicId(userTopicId)
-            ?: throw UserTopicNotFoundException("User topic with id $userTopicId not found")
+    fun getUserTopicById(id: Long): UserTopicEntity {
+        return userTopicRepository.findById(id)
+            .orElseThrow { UserTopicNotFoundException("User topic with id $id not found") }
     }
 
     fun getAllUserTopicsByUserId(userId: Long): List<UserTopicEntity> {
@@ -29,16 +29,16 @@ class UserTopicService(
             ?: throw UserTopicNotFoundException("No topics found for user with id $userId")
     }
 
-    fun getAllUserTopicsByTopicId(topicId: Int): List<UserTopicEntity> {
+    fun getAllUserTopicsByTopicId(topicId: Long): List<UserTopicEntity> {
         return userTopicRepository.findAllByTopicId(topicId)
             ?: throw UserTopicNotFoundException("No topics found with topic id $topicId")
     }
 
     @Transactional
-    fun deleteUserTopicById(userTopicId: Long): UserTopicEntity {
-        val userTopic = userTopicRepository.findByUserTopicId(userTopicId)
-            ?: throw UserTopicNotFoundException("User topic with id $userTopicId not found")
-        userTopicRepository.deleteByUserTopicId(userTopicId)
+    fun deleteUserTopicById(id: Long): UserTopicEntity {
+        val userTopic = userTopicRepository.findById(id)
+            .orElseThrow { UserTopicNotFoundException("User topic with id $id not found") }
+        userTopicRepository.deleteById(id)
         return userTopic
     }
 
