@@ -9,6 +9,7 @@ import com.example.blank.entity.updateTimestamp
 import com.example.blank.dto.toEntity
 import com.example.blank.repository.ContentRepository
 import com.example.blank.entity.ContentEntity
+import java.util.Optional
 
 @Service
 class ContentService(
@@ -19,11 +20,11 @@ class ContentService(
         contentRepository.save(content.toEntity())
     }
 
-    fun getContentByContentId(contentId: Long): ContentEntity {
-        return contentRepository.findByContentId(contentId) ?: throw ContentNotFoundException("Content with contentId $contentId not found")
+    fun getContentById(id: Long): ContentEntity {
+        return contentRepository.findById(id).orElseThrow { ContentNotFoundException("Content with id $id not found") }
     }
 
-    fun getContentByTopicId(topicId: Long): ContentEntity {
+    fun getContentByTopicId(topicId: Long): List<ContentEntity> {
         return contentRepository.findAllByTopicId(topicId) ?: throw ContentNotFoundException("Content with topicId $topicId not found")
     }
 
@@ -32,36 +33,43 @@ class ContentService(
     }
 
     @Transactional
-    fun deleteContentByContentId(contentId: Long): ContentEntity {
-        val content = contentRepository.findByContentId(contentId) ?: throw ContentNotFoundException("Content with contentId $contentId not found")
-        contentRepository.deleteByContentId(contentId)
+    fun deleteContentById(id: Long): ContentEntity {
+        val content = contentRepository.findById(id).orElseThrow { ContentNotFoundException("Content with id $id not found") }
+        contentRepository.deleteById(id)
         return content
     }
 
     @Transactional
-    fun deleteContentByTopicId(topicId: Long): ContentEntity {
-        val content = contentRepository.findAllByTopicId(topicId) ?: throw ContentNotFoundException("Content with topicId $topicId not found")
-        contentRepository.deleteAllByTopicId(topicId)
-        return content
+    fun deleteContentByTopicId(topicId: Long): Int {
+        val contentList = contentRepository.findAllByTopicId(topicId) ?: throw ContentNotFoundException("Content with topicId $topicId not found")
+        val deletedCount = contentRepository.deleteAllByTopicId(topicId)
+        if (deletedCount <= 0) {
+            throw ContentNotFoundException("Failed to delete content with topicId $topicId")
+        }
+        return deletedCount
     }
 
     @Transactional
-    fun deleteAllContentByType(type: String): List<ContentEntity> {
-        val contentList = contentRepository.deleteAllByType(type) ?: throw ContentNotFoundException("No content with type $type found")
-        return contentList
+    fun deleteAllContentByType(type: String): Int {
+        val contentList = contentRepository.findAllByType(type) ?: throw ContentNotFoundException("No content with type $type found")
+        val deletedCount = contentRepository.deleteAllByType(type)
+        if (deletedCount <= 0) {
+            throw ContentNotFoundException("Failed to delete content with type $type")
+        }
+        return deletedCount
     }
 
     @Transactional
-    fun updateContentType(contentId: Long, newType: String): ContentEntity {
-        val content = contentRepository.findByContentId(contentId) ?: throw ContentNotFoundException("Content with contentId $contentId not found")
+    fun updateContentType(id: Long, newType: String): ContentEntity {
+        val content = contentRepository.findById(id).orElseThrow { ContentNotFoundException("Content with id $id not found") }
         content.type = newType
         content.updateTimestamp()
         return contentRepository.save(content)
     }
 
     @Transactional
-    fun updateContentData(contentId: Long, newData: String): ContentEntity {
-        val content = contentRepository.findByContentId(contentId) ?: throw ContentNotFoundException("Content with contentId $contentId not found")
+    fun updateContentData(id: Long, newData: String): ContentEntity {
+        val content = contentRepository.findById(id).orElseThrow { ContentNotFoundException("Content with id $id not found") }
         content.contentData = newData
         content.updateTimestamp()
         return contentRepository.save(content)

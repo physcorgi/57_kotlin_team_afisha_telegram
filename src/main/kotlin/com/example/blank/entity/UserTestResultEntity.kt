@@ -20,16 +20,16 @@ class UserTestResultEntity(
     val id: Long = 0,
 
     @Column(name = "user_id", nullable = false)
-    val userId: Long,
+    val userId: Long = 0,
 
     @Column(name = "test_id", nullable = false)
-    val testId: Long,
+    val testId: Long = 0,
 
     @Column(nullable = false)
-    var score: Int,
+    var score: Int = 0,
 
     @Column(nullable = false)
-    var time: Float,
+    var time: Float = 0f,
 
     @Column(nullable = false)
     var count: Int = 0,
@@ -39,7 +39,10 @@ class UserTestResultEntity(
 
     @Column(name = "last_completed_at", nullable = false)
     var lastCompletedAt: LocalDateTime = LocalDateTime.now()
-)
+) {
+    // Конструктор по умолчанию для Hibernate
+    constructor() : this(0, 0, 0, 0, 0f, 0, LocalDateTime.now(), LocalDateTime.now())
+}
 
 fun UserTestResultEntity.updateTimestamp() {
     lastCompletedAt = LocalDateTime.now()

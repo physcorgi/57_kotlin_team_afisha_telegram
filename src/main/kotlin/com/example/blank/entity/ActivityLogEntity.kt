@@ -3,6 +3,8 @@ package com.example.blank.entity
 import com.example.blank.dto.ActivityLogDto
 import jakarta.persistence.*
 import java.time.LocalDateTime
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.SqlTypes
 
 @Entity
 @Table(
@@ -19,17 +21,21 @@ class ActivityLogEntity(
     val id: Long = 0,
 
     @Column(name = "user_id", nullable = false)
-    val userId: Long,
+    val userId: Long = 0,
 
     @Column(nullable = false, length = 255)
-    val action: String,
+    val action: String = "",
 
-    @Column(nullable = true, columnDefinition = "jsonb")
-    val details: String?,
+    @Column(nullable = true)
+    @JdbcTypeCode(SqlTypes.JSON)
+    val details: String? = null,
 
     @Column(name = "created_at", nullable = false, updatable = false)
     val createdAt: LocalDateTime = LocalDateTime.now()
-)
+) {
+    // Конструктор по умолчанию для Hibernate
+    constructor() : this(0, 0, "", null, LocalDateTime.now())
+}
 
 fun ActivityLogEntity.toDto() = ActivityLogDto(
     userId = userId,

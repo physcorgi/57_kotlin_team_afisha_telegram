@@ -12,78 +12,76 @@ import com.example.blank.entity.updateTimestamp
 
 @Service
 class TestService(
-    val TestRepository: TestRepository
+    val testRepository: TestRepository
 ) {
 
     fun addTest(test: TestDto) {
-        TestRepository.save(test.toEntity())
+        testRepository.save(test.toEntity())
     }
 
-    fun getTestByTestId(testId: Long): TestEntity {
-        return TestRepository.findByTestId(testId) ?: throw TestNotFoundException("Test with testId $testId not found")
+    fun getTestById(id: Long): TestEntity {
+        return testRepository.findById(id).orElseThrow { TestNotFoundException("Test with id $id not found") }
     }
 
     fun getAllTestsByContentType(contentType: String): List<TestEntity> {
-        return TestRepository.findAllByContentType(contentType) ?: throw TestNotFoundException("No tests with contentType $contentType found")
+        return testRepository.findAllByContentType(contentType) ?: throw TestNotFoundException("No tests with contentType $contentType found")
     }
 
     fun getAllTestsByDifficulty(difficulty: String): List<TestEntity> {
-        return TestRepository.findAllByDifficulty(difficulty) ?: throw TestNotFoundException("No tests with difficulty $difficulty found")
+        return testRepository.findAllByDifficulty(difficulty) ?: throw TestNotFoundException("No tests with difficulty $difficulty found")
     }
 
     @Transactional
-    fun deleteTestByTestId(testId: Long): TestEntity {
-        val test = TestRepository.findByTestId(testId) ?: throw TestNotFoundException("No test with testId $testId found")
-        TestRepository.deleteByTestId(testId)
+    fun deleteTestById(id: Long): TestEntity {
+        val test = testRepository.findById(id).orElseThrow { TestNotFoundException("No test with id $id found") }
+        testRepository.deleteById(id)
         return test
     }
 
     @Transactional
-    fun deleteTestByContentType(contentType: String): List<TestEntity> {
-        val tests = TestRepository.findAllByContentType(contentType) ?: throw TestNotFoundException("No test with contentType $contentType found")
+    fun deleteTestsByContentType(contentType: String): Int {
+        val tests = testRepository.findAllByContentType(contentType) ?: throw TestNotFoundException("No test with contentType $contentType found")
 
         if (tests.isEmpty()) {
             throw TestNotFoundException("No tests with contentType $contentType found")
         }
 
-        TestRepository.deleteAllByContentType(contentType)
-        return tests
+        return testRepository.deleteAllByContentType(contentType)
     }
 
     @Transactional
-    fun deleteTestByDifficulty(difficulty: String): List<TestEntity> {
-        val tests = TestRepository.findAllByDifficulty(difficulty) ?: throw TestNotFoundException("No tests with difficulty $difficulty found")
+    fun deleteTestsByDifficulty(difficulty: String): Int {
+        val tests = testRepository.findAllByDifficulty(difficulty) ?: throw TestNotFoundException("No tests with difficulty $difficulty found")
 
         if (tests.isEmpty()) {
             throw TestNotFoundException("No tests with difficulty $difficulty found")
         }
 
-        TestRepository.deleteAllByDifficulty(difficulty)
-        return tests
+        return testRepository.deleteAllByDifficulty(difficulty)
     }
 
     @Transactional
-    fun updateTestDifficulty(testId: Long, newDifficulty: String): TestEntity {
-        val test = TestRepository.findByTestId(testId) ?: throw TestNotFoundException("No test with testId $testId found")
+    fun updateTestDifficulty(id: Long, newDifficulty: String): TestEntity {
+        val test = testRepository.findById(id).orElseThrow { TestNotFoundException("No test with id $id found") }
         test.difficulty = newDifficulty
         test.updateTimestamp()
-        return TestRepository.save(test)
+        return testRepository.save(test)
     }
 
     @Transactional
-    fun updateTestQuestions(testId: Long, newQuestions: String): TestEntity {
-        val test = TestRepository.findByTestId(testId) ?: throw TestNotFoundException("Test with testId $testId not found")
+    fun updateTestQuestions(id: Long, newQuestions: String): TestEntity {
+        val test = testRepository.findById(id).orElseThrow { TestNotFoundException("Test with id $id not found") }
         test.questions = newQuestions
         test.updateTimestamp()
-        return TestRepository.save(test)
+        return testRepository.save(test)
     }
 
     @Transactional
-    fun updateTestAnswers(testId: Long, newAnswers: String): TestEntity {
-        val test = TestRepository.findByTestId(testId) ?: throw TestNotFoundException("Test with testId $testId not found")
+    fun updateTestAnswers(id: Long, newAnswers: String): TestEntity {
+        val test = testRepository.findById(id).orElseThrow { TestNotFoundException("Test with id $id not found") }
         test.answers = newAnswers
         test.updateTimestamp()
-        return TestRepository.save(test)
+        return testRepository.save(test)
     }
 }
 
